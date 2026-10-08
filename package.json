@@ -1,0 +1,27 @@
+{
+  "name": "muse-terminal",
+  "version": "1.0.0",
+  "description": "Muse in the terminal, plus a relay that lets Muse work on your own machines",
+  "main": "main.js",
+  "bin": { "muse": "cli/muse.mjs" },
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "chalk": "^5.6.2",
+    "electron": "^44.4.5",
+    "gradient-string": "^3.0.0",
+    "ink": "^6.8.0",
+    "ink-spinner": "^5.0.0",
+    "marked": "^15.0.12",
+    "marked-terminal": "^7.3.0",
+    "react": "^19.1.9",
+    "string-width": "^8.3.0",
+    "wrap-ansi": "^9.0.2",
+    "ws": "^8.22.0"
+  }
+}

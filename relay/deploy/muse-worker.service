@@ -1,0 +1,17 @@
+# Your PC: ~/.config/systemd/user/muse-worker.service
+# Enable with: systemctl --user enable --now muse-worker
+[Unit]
+Description=Muse MCP worker
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=__ROOT__
+# network-online.target isn't tracked by the user manager, so wait for DNS here.
+ExecStartPre=/bin/sh -c 'for i in $(seq 1 60); do getent hosts __RELAY_HOST__ >/dev/null && exit 0; sleep 2; done; exit 0'
+ExecStart=/usr/bin/node src/worker/index.js
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target

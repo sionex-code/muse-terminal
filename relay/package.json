@@ -1,0 +1,28 @@
+{
+  "name": "muse-relay",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "MCP relay: Muse (remote agent) -> VPS -> local worker running opencode/claude on your machine",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "server": "node src/server/index.js",
+    "worker": "node src/worker/index.js",
+    "dev:server": "node --watch src/server/index.js",
+    "dev:worker": "node --watch src/worker/index.js",
+    "cli": "node src/cli.js",
+    "up": "./scripts/up.sh",
+    "down": "systemctl --user stop muse-worker"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "express": "^4.21.2",
+    "ws": "^8.18.0",
+    "zod": "^3.24.1"
+  },
+  "bin": {
+    "muse": "src/cli.js"
+  }
+}

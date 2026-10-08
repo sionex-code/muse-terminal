@@ -1,0 +1,19 @@
+# VPS: /etc/systemd/system/muse-mcp.service
+[Unit]
+Description=Muse MCP relay
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=muse
+WorkingDirectory=/opt/muse-mcp
+ExecStart=/usr/bin/node src/server/index.js
+Restart=always
+RestartSec=3
+Environment=NODE_ENV=production
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
