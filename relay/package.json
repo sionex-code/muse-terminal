@@ -14,7 +14,9 @@
     "dev:worker": "node --watch src/worker/index.js",
     "cli": "node src/cli.js",
     "up": "./scripts/up.sh",
-    "down": "systemctl --user stop muse-worker"
+    "down": "systemctl --user stop muse-worker",
+    "tunnel": "node scripts/tunnel.mjs",
+    "setup": "node scripts/tunnel.mjs setup"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0",

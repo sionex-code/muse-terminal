@@ -42,9 +42,49 @@ Set `MUSE_WORKER` to the name of your relay worker (default: your hostname). The
 
 ## 2. Set up the relay (optional)
 
-Full guide in [relay/README.md](relay/README.md). Short version:
+The relay lets Muse work on your PC. You have two ways to host it.
 
-**On the VPS** (needs Node 20+, nginx, a domain with a TLS cert):
+### A. On your own PC with Cloudflare, no VPS (recommended)
+
+One command, Windows or Linux. It installs everything, creates a **permanent** HTTPS address through a Cloudflare tunnel, starts at login and prints what to paste into Muse.
+
+| | Windows | Linux |
+| --- | --- | --- |
+| One click | double-click `install.cmd` | `./install.sh` |
+| From the web | `irm https://raw.githubusercontent.com/sionex-code/muse-terminal/master/install.ps1 \| iex` | `curl -fsSL https://raw.githubusercontent.com/sionex-code/muse-terminal/master/install.sh \| bash` |
+
+What you need: Node 20+ (the Windows installer gets it with winget if missing), and a free Cloudflare account with one domain on it. The installer then:
+
+1. Downloads `cloudflared` for you.
+2. Opens a browser once so you log in to Cloudflare and pick the domain.
+3. Asks for the address you want, for example `muse.yourdomain.com`, creates the tunnel and points that address at it.
+4. Generates both tokens, writes `relay/.env`, and installs autostart (systemd on Linux, Task Scheduler on Windows).
+5. Prints the **MCP URL** and the **Bearer token**. Add them in Muse as a remote MCP server (streamable HTTP, header `Authorization: Bearer <token>`).
+
+No domain? Press Enter at the hostname question, or pass `--quick`, and you get a temporary `trycloudflare.com` address with no account. It changes every restart.
+
+For scripts and agents, nothing has to be asked:
+
+```bash
+./install.sh --hostname muse.yourdomain.com --roots "$HOME/projects"
+./install.sh --quick --no-service
+```
+
+Flags: `--hostname`, `--quick`, `--roots`, `--shell` (allow raw shell commands, off by default), `--no-service`.
+
+Day to day (run in `relay/`):
+
+```bash
+npm run tunnel -- status      # URL, token, who is online
+npm run tunnel -- run         # run in the foreground instead of as a service
+npm run tunnel -- unservice   # remove autostart
+```
+
+The tunnel and the relay both run only on your PC, so the address works while your PC is on and online.
+
+### B. On a VPS
+
+Full guide in [relay/README.md](relay/README.md). Use this if you want the relay up when your PC is off or want it separate from your machine.
 
 ```bash
 sudo adduser --system --group --home /opt/muse-mcp muse
@@ -56,18 +96,7 @@ sudo -u muse nano .env   # set both tokens, keep HOST=127.0.0.1
 sudo cp deploy/muse-mcp.service /etc/systemd/system/ && sudo systemctl enable --now muse-mcp
 ```
 
-Edit `deploy/nginx.conf` (replace `relay.example.com` with your domain), install it, get a cert with certbot, reload nginx. `curl https://<domain>/health` should answer.
-
-**On your PC:**
-
-```bash
-cd relay && npm install
-cp .env.example .env     # set RELAY_URL=wss://<domain>/agent, WORKER_TOKEN (same as VPS),
-                         # WORKER_NAME, WORKER_ROOTS (folders the agent may touch)
-npm run up               # installs and starts the systemd user service, waits until the relay sees you
-```
-
-**Connect Muse** as a remote MCP server: URL `https://<domain>/mcp`, streamable HTTP, header `Authorization: Bearer <MCP_TOKEN>`. Claude Code and opencode snippets are in the relay README.
+Edit `deploy/nginx.conf` (replace `relay.example.com`), install it, get a cert with certbot, reload nginx. Then on your PC: `cd relay && npm install && cp .env.example .env`, set `RELAY_URL=wss://<domain>/agent`, the same `WORKER_TOKEN`, `WORKER_ROOTS`, and run `npm run up`.
 
 ## Security
 
